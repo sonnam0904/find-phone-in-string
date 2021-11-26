@@ -11,15 +11,40 @@
 //  $s = "097.999.9998 097.999.9999. 09 xxxxxx xxx";
 //  $s = "xxx 0979999998 0979999999. 09 xxxxxx xxx";
 // $s = "Địa chỉ của c là toà HH01A KĐT THANH HÀ. 0384468188";
-// $s = "Zalo dùng số điện thoại 0386500999";
+// $s = "Zalo dùng số điện thoại 0186500999";
 $s = "10/ 08- 2020. 09872 728 23 day ne";
 
 $result = GetPhone($s);
 var_dump($result);die;
 
 function GetPhone($s) {
-	return FindPhone(explode(" ", str_replace(".", " ", $s)));
+	return FindPhone(explode(" ", removeSpecialChar($s)));
 }
+function removeSpecialChar($s) {
+	$rm = [",", ".", "+"];
+	
+	foreach ($rm AS $k => $v) {
+		$s = str_replace($v, " ", $s);
+	}
+	return $s;
+}
+function getPhoneVnValid($s) {
+	if (strlen($s)==11) {
+		$check = ["843", "845", "847", "848", "849"];
+	} else if (strlen($s) == 10) {
+		$check = ["03", "05", "07", "08", "09"];
+	} else {
+		return false;
+	}
+	
+	foreach ($check AS $k => $v) {
+		if (strpos($s, $v)===0) {
+		    return true;
+		}
+	}
+	return false;
+}
+
 function FindPhone($data, $from = 0, $result = []) {
 
     echo "Bắt đầu kiểm tra từ phần tử $from\n";
@@ -37,17 +62,26 @@ function FindPhone($data, $from = 0, $result = []) {
                 $num .= $data[$i];
                 echo "Day so hien tai dang co: $num \n";
                 
-                if (strlen($num)==10) {
-                    // stop vi tim dc 10 so de check valid so dien thoại
-                    echo "---------------------------------!!! MATCH: $num \n";
-                    // check dau so valid 090, 091 092 .....
-                    
-                    // luu vao mang chua ket qua
-                    array_push($result, $num);
-					
-					// cap nhat lai milestone hien tai
-					$milestone = $i;
-                    continue;
+                if (strlen($num)==10 || strlen($num)==11) {
+					if (getPhoneVnValid($num)) {
+						 // stop vi tim dc 10 so de check valid so dien thoại
+						echo "---------------------------------!!! MATCH: $num \n";
+						// check dau so valid 090, 091 092 .....
+						
+						// luu vao mang chua ket qua
+						array_push($result, $num);
+						
+						// cap nhat lai milestone hien tai
+						$milestone = $i;
+						continue;
+					} else {
+					    echo "Dau so khong hop le, kiem tra tiep\n";
+						// dau so khong hop le
+						// tiep tuc tim kiem lai bat dau tu Milestone + 1
+						$result = FindPhone($data, $milestone+1, $result);
+						
+						break;
+					}
                 } else if (strlen($num)>10) {
                     // qua 10 so --> k phai la so dien thoại
                     echo "Đã lấy quá 10 số đây không phải là số điện thoại, reset để kiểm tra lại bắt đầu từ phần tử Mốc ".($milestone+1)."\n";
