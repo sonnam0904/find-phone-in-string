@@ -63,25 +63,25 @@ function FindPhone($data, $from = 0, $result = []) {
                 echo "Day so hien tai dang co: $num \n";
                 
                 if (strlen($num)==10 || strlen($num)==11) {
-					if (getPhoneVnValid($num)) {
-						 // stop vi tim dc 10 so de check valid so dien thoại
-						echo "---------------------------------!!! MATCH: $num \n";
-						// check dau so valid 090, 091 092 .....
-						
-						// luu vao mang chua ket qua
-						array_push($result, $num);
-						
-						// cap nhat lai milestone hien tai
-						$milestone = $i;
-						continue;
-					} else {
-					    echo "Dau so khong hop le, kiem tra tiep\n";
-						// dau so khong hop le
-						// tiep tuc tim kiem lai bat dau tu Milestone + 1
-						$result = FindPhone($data, $milestone+1, $result);
-						
-						break;
-					}
+			if (getPhoneVnValid($num)) {
+				 // stop vi tim dc 10 so de check valid so dien thoại
+				echo "---------------------------------!!! MATCH: $num \n";
+				// check dau so valid 090, 091 092 .....
+
+				// luu vao mang chua ket qua
+				array_push($result, $num);
+
+				// cap nhat lai milestone hien tai
+				$milestone = $i;
+				continue;
+			} else {
+			    echo "Dau so khong hop le, kiem tra tiep\n";
+				// dau so khong hop le
+				// tiep tuc tim kiem lai bat dau tu Milestone + 1
+				$result = FindPhone($data, $milestone+1, $result);
+
+				break;
+			}
                 } else if (strlen($num)>10) {
                     // qua 10 so --> k phai la so dien thoại
                     echo "Đã lấy quá 10 số đây không phải là số điện thoại, reset để kiểm tra lại bắt đầu từ phần tử Mốc ".($milestone+1)."\n";
